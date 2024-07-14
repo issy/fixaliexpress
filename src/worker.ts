@@ -1,5 +1,5 @@
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     console.log("Worker started processing request");
     const url = new URL(request.url);
     const userAgent = request.headers.get("user-agent");
