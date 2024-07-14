@@ -1,9 +1,39 @@
 function isDiscordUserAgent(req: Request): boolean {
-  return req.userAgent.includes('Discord');
+  const userAgent = req.headers.get('user-agent')
+  return userAgent !== null && userAgent.includes('Discord');
+}
+
+function getItemId(url: URL): string | undefined {
+  const match = url.pathname.match(/\/item\/(\d+)\.html/);
+  if (!match) return;
+  const itemId = match[1];
+  return `https://www.aliexpress.com/item/${itemId}.html`;
+}
+
+function populateHtmlTemplate(title: string, color: string, itemId: string, imageUrl: string, description: string) {
+  return `<html>
+    <head>
+      <title>${title}</title>
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="theme-color" content="${color}">
+      <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+      <meta property="og:site_name" content="alimbedxpress.com created by alf">
+      <meta name="twitter:title" content="AliExpress - ${itemId}" />
+      <meta name="twitter:image" content="${imageUrl}" />
+      <meta name="twitter:creator" content="@aliexpress" />
+      <meta property="og:description" content="${title}" />
+    </head>
+    <body>
+      <h1>${title}</h1>
+      <p>${description}</p>
+      <p>Click to view on AliExpresss</p>
+      <img src="${imageUrl}" alt="${title}">
+    </body>
+  </html>`;
 }
 
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  async fetch(request: Request): Promise<Response> {
     console.log("Worker started processing request");
     const url = new URL(request.url);
     const userAgent = request.headers.get("user-agent");
