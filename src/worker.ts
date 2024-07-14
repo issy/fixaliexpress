@@ -1,3 +1,7 @@
+function isDiscordUserAgent(req: Request): boolean {
+  return req.userAgent.includes('Discord');
+}
+
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     console.log("Worker started processing request");
